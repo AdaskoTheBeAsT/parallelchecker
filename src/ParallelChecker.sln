@@ -4,12 +4,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.31423.177
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A6397DBB-8B1A-4381-96AA-D27EC76EF6B3}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParallelChecker.Core", "ParallelChecker.Core\ParallelChecker.Core.csproj", "{C12B0414-3116-4D69-B135-23BB5E2BDE4C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParallelChecker._Test", "ParallelChecker._Test\ParallelChecker._Test.csproj", "{3157A8CC-F2AD-4400-9CDE-793A26B92CCF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParallelChecker", "ParallelChecker\ParallelChecker.csproj", "{BBC41FB8-772C-4F57-8985-DCBFC63BF98E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelChecker", "ParallelChecker\ParallelChecker.csproj", "{BBC41FB8-772C-4F57-8985-DCBFC63BF98E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParallelChecker.Test", "ParallelChecker.Test\ParallelChecker.Test.csproj", "{F572717F-B586-4C70-9B94-AD64C52554D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,14 +24,14 @@ Global
 		{C12B0414-3116-4D69-B135-23BB5E2BDE4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C12B0414-3116-4D69-B135-23BB5E2BDE4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C12B0414-3116-4D69-B135-23BB5E2BDE4C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3157A8CC-F2AD-4400-9CDE-793A26B92CCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3157A8CC-F2AD-4400-9CDE-793A26B92CCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3157A8CC-F2AD-4400-9CDE-793A26B92CCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3157A8CC-F2AD-4400-9CDE-793A26B92CCF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BBC41FB8-772C-4F57-8985-DCBFC63BF98E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BBC41FB8-772C-4F57-8985-DCBFC63BF98E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBC41FB8-772C-4F57-8985-DCBFC63BF98E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBC41FB8-772C-4F57-8985-DCBFC63BF98E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F572717F-B586-4C70-9B94-AD64C52554D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F572717F-B586-4C70-9B94-AD64C52554D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F572717F-B586-4C70-9B94-AD64C52554D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F572717F-B586-4C70-9B94-AD64C52554D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

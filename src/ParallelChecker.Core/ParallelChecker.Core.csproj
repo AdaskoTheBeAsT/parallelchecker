@@ -8,12 +8,12 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>ConcurrencyLab.ParallelChecker</PackageId>
+    <PackageId>AdaskoTheBeAsT.ConcurrencyLab.ParallelChecker</PackageId>
     <Authors>Prof. Dr. Luc Bläser</Authors>
-    <Version>2.7.0</Version>
+    <Version>2.7.0.1</Version>
     <Company>OST - Ostschweizer Fachhochschule, Switzerland</Company>
     <Copyright>Copyright © 2017-2022 Prof. Dr. Luc Bläser, OST - Ostschweizer Fachhochschule, Switzerland</Copyright>
-    <Description>Parallel Checker: Static detection of data races, deadlocks, and other concurrency issues in C#.</Description>
+    <Description>Parallel Checker: Static detection of data races, deadlocks, and other concurrency issues in C#. Version with updated dependencies.</Description>
     <PackageProjectUrl>https://github.com/blaeser/parallelchecker</PackageProjectUrl>
     <Product>Parallel Checker</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -23,13 +23,17 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <RepositoryUrl>https://github.com/blaeser/parallelchecker</RepositoryUrl>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <InternalsVisibleTo Include="ConcurrencyLab.ParallelChecker.Test"/>
+  </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3">
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0-beta1.23525.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.4.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

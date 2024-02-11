@@ -1,29 +1,33 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-
     <IsPackable>false</IsPackable>
-
-    <AssemblyName>ConcurrencyLab.ParallelChecker._Test</AssemblyName>
-
+    <AssemblyName>ConcurrencyLab.ParallelChecker.Test</AssemblyName>
     <Version>2.7.0</Version>
-
     <Company>OST - Ostschweizer Fachhochschule, Switzerland</Company>
-
     <Copyright>Copyright © 2017-2022 Prof. Dr. Luc Bläser, OST - Ostschweizer Fachhochschule, Switzerland</Copyright>
-
     <Product>ParallelChecker</Product>
-
     <Authors>Prof. Dr. Luc Bläser</Authors>
-
     <Description>Parallel Checker - tests</Description>
-
     <SignAssembly>False</SignAssembly>
-
     <AssemblyOriginatorKeyFile>parallelchecker_keypair.snk</AssemblyOriginatorKeyFile>
-
     <AssemblyVersion>2.6.0.0</AssemblyVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.2.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.2.0" />
+    <PackageReference Include="coverlet.collector" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ParallelChecker.Core\ParallelChecker.Core.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="ControlFlowTestCases\AbstractMethod.cs" />
@@ -4992,24 +4996,7 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.4.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
-    <PackageReference Include="coverlet.collector" Version="3.2.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ParallelChecker.Core\ParallelChecker.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+ 
 
   <ItemGroup>
     <Resource Include="ParallelCheckerCases\AAThreadStatic.xml" />

@@ -3,7 +3,7 @@
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFrameworks>net472;netstandard2.0</TargetFrameworks>
     <RootNamespace>ParallelChecker</RootNamespace>
     <AssemblyName>ConcurrencyLab.ParallelChecker</AssemblyName>
   </PropertyGroup>
@@ -17,6 +17,45 @@
     <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
     <VSSDKTargetPlatformRegRootSuffix>Exp</VSSDKTargetPlatformRegRootSuffix>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(DevEnvDir)devenv.exe</StartProgram>
+    <StartArguments>/rootsuffix $(VSSDKTargetPlatformRegRootSuffix)</StartArguments>
+    <Description>Parallel Checker for C#</Description>
+    <Copyright>Copyright © 2017-2022 Prof. Dr. Luc Bläser, OST - Ostschweizer Fachhochschule, Switzerland</Copyright>
+    <PackageProjectUrl>https://github.com/blaeser/parallelchecker</PackageProjectUrl>
+    <Version>2.7.0.0</Version>
+    <Title>Parallel Checker for C#</Title>
+    <Company>OST - Ostschweizer Fachhochschule, Switzerland"</Company>
+    <Product>Parallel Checker</Product>
+    <RepositoryUrl>https://github.com/blaeser/parallelchecker</RepositoryUrl>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
+    <NeutralLanguage>en-US</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ParallelChecker.Test"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.9.3168" PrivateAssets="all" />
+  </ItemGroup>
+
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+
+  <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\ParallelChecker.Core\ParallelChecker.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="license.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="GettingStarted.txt">
@@ -46,45 +85,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.4.2119" PrivateAssets="all" />
-  </ItemGroup>
-
-  <PropertyGroup>
-    <StartAction>Program</StartAction>
-    <StartProgram>$(DevEnvDir)devenv.exe</StartProgram>
-    <StartArguments>/rootsuffix $(VSSDKTargetPlatformRegRootSuffix)</StartArguments>
-    <Description>Parallel Checker for C#</Description>
-    <Copyright>Copyright © 2017-2022 Prof. Dr. Luc Bläser, OST - Ostschweizer Fachhochschule, Switzerland</Copyright>
-    <PackageProjectUrl>https://github.com/blaeser/parallelchecker</PackageProjectUrl>
-    <Version>2.7.0.0</Version>
-    <Title>Parallel Checker for C#</Title>
-    <Company>OST - Ostschweizer Fachhochschule, Switzerland"</Company>
-    <Product>Parallel Checker</Product>
-    <RepositoryUrl>https://github.com/blaeser/parallelchecker</RepositoryUrl>
-    <PackageLicenseFile>license.txt</PackageLicenseFile>
-    <NeutralLanguage>en-US</NeutralLanguage>
-  </PropertyGroup>
-
-  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
-
-  <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
-
-  <ItemGroup>
-    <ProjectReference Include="..\ParallelChecker.Core\ParallelChecker.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="license.txt">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- https://github.com/dotnet/sdk/issues/433 -->
+     <!--https://github.com/dotnet/sdk/issues/433--> 
     <ProjectReference Update="@(ProjectReference)" AdditionalProperties="TargetFramework=netstandard2.0" />
 
-    <!-- https://github.com/Microsoft/extendvs/issues/57 -->
+     <!--https://github.com/Microsoft/extendvs/issues/57--> 
     <ProjectReference Update="@(ProjectReference)" Name="%(Filename)" />
   </ItemGroup>
 </Project>
