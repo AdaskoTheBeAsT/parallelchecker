@@ -10,7 +10,7 @@
   <PropertyGroup>
     <PackageId>AdaskoTheBeAsT.ConcurrencyLab.ParallelChecker</PackageId>
     <Authors>Prof. Dr. Luc Bläser</Authors>
-    <Version>2.7.0.3</Version>
+    <Version>2.7.0.4</Version>
     <Company>OST - Ostschweizer Fachhochschule, Switzerland</Company>
     <Copyright>Copyright © 2017-2022 Prof. Dr. Luc Bläser, OST - Ostschweizer Fachhochschule, Switzerland</Copyright>
     <Description>Parallel Checker: Static detection of data races, deadlocks, and other concurrency issues in C#. Version with updated dependencies.</Description>
@@ -22,6 +22,7 @@
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <NeutralLanguage>en-US</NeutralLanguage>
     <RepositoryUrl>https://github.com/blaeser/parallelchecker</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   
   <ItemGroup>
@@ -39,6 +40,7 @@
   <ItemGroup>
     <None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="" />
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>
