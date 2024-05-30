@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A6397DBB-8B1A-4381-96AA-D27EC76EF6B3}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		nuget.config = nuget.config
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParallelChecker.Core", "ParallelChecker.Core\ParallelChecker.Core.csproj", "{C12B0414-3116-4D69-B135-23BB5E2BDE4C}"
