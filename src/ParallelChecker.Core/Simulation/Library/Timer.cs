@@ -1,6 +1,8 @@
 ﻿using ParallelChecker.Core.Simulation.Base;
 using ParallelChecker.Core.Simulation.Model;
 using System;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ParallelChecker.Core.Simulation.Library {
   [Type("System.Threading")]
@@ -13,9 +15,9 @@ namespace ParallelChecker.Core.Simulation.Library {
     private readonly object _state;
 
     [Member]
-    public Timer(Program _, object callback, object state) :
+    public Timer(Program program, object callback, object state) :
       base(typeof(System.Threading.Timer)) {
-      _callback = callback;
+      _callback = ConvertCallback(program, callback);
       _state = state;
     }
 
@@ -34,6 +36,19 @@ namespace ParallelChecker.Core.Simulation.Library {
     public bool Change(Program program, object timeout, object period) {
       Activate(program, timeout, period);
       return true;
+    }
+
+    private static object ConvertCallback(Program program, object callback) {
+      if (callback is Lambda || callback is System.Delegate || callback is LinqExpression) {
+        return callback;
+      }
+      if (callback is AnonymousFunctionExpressionSyntax lambdaSyntax) {
+        var symbol = (IMethodSymbol)program.CompilationModel.GetReferencedSymbol(lambdaSyntax);
+        // capture the current method as closure owner (if any)
+        var closure = program.ActiveThread?.CallStack.Count > 0 ? program.ActiveMethod : null;
+        return new Lambda(lambdaSyntax, symbol, closure);
+      }
+      return callback;
     }
 
     private void Activate(Program program, object timeout, object period) {

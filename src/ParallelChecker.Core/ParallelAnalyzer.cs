@@ -12,6 +12,7 @@ namespace ParallelChecker.Core {
   [DiagnosticAnalyzer(LanguageNames.CSharp)]
   public class ParallelAnalyzer : DiagnosticAnalyzer {
     private const string _DiagnosticId = "ParallelChecker";
+    private const string _DiagnosticInfoId = "ParallelCheckerInfo"; // NEW: separate ID for info
     private const string _DiagnosticTitle = "Concurrency Issue Detection";
     private const string _WarningFormat = "Issue: #{0} {1}";
     private const string _InfoFormat = "Detection in {0} ms ({1} issues) {2}";
@@ -31,7 +32,7 @@ namespace ParallelChecker.Core {
       new(_DiagnosticId, _DiagnosticTitle, _WarningFormat,
         _Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, helpLinkUri: _GeneralHelpLink);
     private static readonly DiagnosticDescriptor _diagnosticInfo =
-      new(_DiagnosticId, _DiagnosticTitle, _InfoFormat,
+      new(_DiagnosticInfoId, _DiagnosticTitle, _InfoFormat,
         _Category, DiagnosticSeverity.Info, isEnabledByDefault: true, helpLinkUri: _GeneralHelpLink);
 
     private static readonly AnalysisOptions _options = new() {
@@ -85,11 +86,15 @@ namespace ParallelChecker.Core {
             _cache[assembly].Issues.AddAll(result);
           }
           ReportIssues(context.ReportDiagnostic, tree, result);
+          var issueCount = result.Count();
 #if DEBUG
-          ReportInfo(context.ReportDiagnostic, location, watch, result.Count().ToString(), faulted ? _FaultSign : string.Empty);
+          // Guard: only report info when there are issues or a fault occurred
+          if (issueCount > 0 || faulted) {
+            ReportInfo(context.ReportDiagnostic, location, watch, issueCount.ToString(), faulted ? _FaultSign : string.Empty);
+          }
 #else
           if (faulted) {
-            ReportInfo(context.ReportDiagnostic, location, watch, result.Count().ToString(), faulted ? _FaultSign : string.Empty);
+            ReportInfo(context.ReportDiagnostic, location, watch, issueCount.ToString(), faulted ? _FaultSign : string.Empty);
           }
 #endif
         } catch (OperationCanceledException) {
@@ -105,7 +110,11 @@ namespace ParallelChecker.Core {
       } else {
 #if DEBUG
         lock (_cache) {
-          ReportInfo(context.ReportDiagnostic, location, watch, _NoneSign, $"Cached {_cache[assembly].Issues}");
+          // Guard: only report info for cached result when there are issues
+          var cachedCount = _cache[assembly].Issues.Count;
+          if (cachedCount > 0) {
+            ReportInfo(context.ReportDiagnostic, location, watch, cachedCount.ToString(), "Cached");
+          }
         }
 #endif
         ReportIssues(context.ReportDiagnostic, tree, _cache[assembly].Issues);

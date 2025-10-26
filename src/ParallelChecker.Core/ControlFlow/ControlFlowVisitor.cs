@@ -312,16 +312,27 @@ namespace ParallelChecker.Core.ControlFlow {
       VisitSpecialArguments(argumentList, parameterList, index);
     }
 
-    private void VisitArgument(ArgumentSyntax argument, IParameterSymbol parameter) {
-      if (parameter.RefKind == RefKind.None) {
-        Visit(argument);
-      } else if (parameter.RefKind == RefKind.In && !IsDesignator(argument.Expression)) {
-        Visit(argument.Expression);
-      } else if (parameter.RefKind == RefKind.In || parameter.RefKind == RefKind.Out || parameter.RefKind == RefKind.Ref) {
-        VisitDesignator(argument.Expression, argument.GetLocation());
-      } else {
-        throw new NotImplementedException();
-      }
+    private void VisitArgument(ArgumentSyntax argument, IParameterSymbol parameter)
+    {
+        if (parameter.RefKind == RefKind.None)
+        {
+            Visit(argument);
+        }
+        else if ((parameter.RefKind == RefKind.In || parameter.RefKind == RefKind.RefReadOnly ||
+                  parameter.RefKind == RefKind.RefReadOnlyParameter) && !IsDesignator(argument.Expression))
+        {
+            Visit(argument.Expression);
+        }
+        else if (parameter.RefKind == RefKind.In || parameter.RefKind == RefKind.Out ||
+                 parameter.RefKind == RefKind.Ref || parameter.RefKind == RefKind.RefReadOnly ||
+                 parameter.RefKind == RefKind.RefReadOnlyParameter)
+        {
+            VisitDesignator(argument.Expression, argument.GetLocation());
+        }
+        else
+        {
+            throw new NotImplementedException();
+        }
     }
 
     private void VisitSpecialArguments(ArgumentListSyntax argumentList, ImmutableArray<IParameterSymbol> parameterList, int index) {
@@ -1396,7 +1407,43 @@ namespace ParallelChecker.Core.ControlFlow {
       }
     }
 
-    public override void VisitArrayCreationExpression(ArrayCreationExpressionSyntax node) {
+    // NEW: Support C# 12 collection expressions (e.g., [a, b])
+    public override void VisitCollectionExpression(CollectionExpressionSyntax node)
+    {
+        var arrayType = _compilationModel.GetNodeType(node) as IArrayTypeSymbol;
+        int elementCount = 0;
+        foreach (var element in node.Elements)
+        {
+            if (element is ExpressionElementSyntax exprElement)
+            {
+                Visit(exprElement.Expression);
+                elementCount++;
+            }
+            else if (element is SpreadElementSyntax spread)
+            {
+                // Conservatively handle spread elements
+                Visit(spread.Expression);
+                ExpandFront(new DiscardBlock(node.GetLocation()));
+                ExpandFront(new UnknownBlock(node.GetLocation()));
+            }
+            else
+            {
+                ExpandFront(new UnknownBlock(node.GetLocation()));
+            }
+        }
+        if (arrayType != null)
+        {
+            ExpandFront(new ArrayInitializerBlock(node.GetLocation(), arrayType.ElementType, arrayType.Rank, elementCount));
+        }
+        else
+        {
+            // Target-typing is not an array (e.g., List<T> builder). Keep conservative behavior.
+            ExpandFront(new UnknownBlock(node.GetLocation()));
+        }
+        ImplicitCast(node);
+    }
+
+        public override void VisitArrayCreationExpression(ArrayCreationExpressionSyntax node) {
       VisitArrayCreation(node.Type, node.Initializer, node.GetLocation());
       ImplicitCast(node);
     }
