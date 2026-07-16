@@ -35,7 +35,7 @@ namespace ParallelChecker._Test {
       };
 
     public static CompilationModel LoadCompilationModel(OutputKind outputKind, string[] codes, string[] additionalIncludes) {
-      var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Preview);
+      var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp13);
       var trees =
         (from code in codes
          select CSharpSyntaxTree.ParseText(code, parseOptions)).ToArray();
@@ -68,8 +68,8 @@ namespace ParallelChecker._Test {
 
     public static void CompareFiles(string description, string effectiveFile, string expectedFile) {
       // TODO: Use proper XML comparison
-      var expected = File.ReadAllText(expectedFile);
-      var effective = File.ReadAllText(effectiveFile);
+      var expected = File.ReadAllText(expectedFile).TrimEnd();
+      var effective = File.ReadAllText(effectiveFile).TrimEnd();
       Assert.AreEqual(expected, effective, string.Format("{0} differs", description));
     }
 

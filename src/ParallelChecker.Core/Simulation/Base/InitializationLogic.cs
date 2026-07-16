@@ -258,7 +258,7 @@ namespace ParallelChecker.Core.Simulation.Base {
     }
 
     private static Thread StartInitialThread(Program program, Cause cause, MethodDeclarationSyntax[] methodDeclarations, Model.Object thisReference) {
-      var methods = methodDeclarations.Reverse().ToArray();
+      var methods = System.Linq.Enumerable.Reverse(methodDeclarations).ToArray();
       var callee = CreateMethod(program, methods[0], thisReference, cause);
       var thread = new Thread(program, cause, callee) {
         State = ThreadState.Runnable,
