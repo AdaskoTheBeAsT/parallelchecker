@@ -2484,7 +2484,15 @@ namespace ParallelChecker.Core.ControlFlow {
     }
 
     private void CastType(SyntaxNode node, ITypeSymbol targetType) {
-      if (_compilationModel.GetReferencedSymbol(node) is IMethodSymbol overloader && overloader.MethodKind == MethodKind.Conversion) {
+      var overloader = _compilationModel.GetReferencedSymbol(node) as IMethodSymbol;
+      if (overloader?.MethodKind != MethodKind.Conversion && targetType.Is(Symbols.SystemIndex)) {
+        var sourceType = _compilationModel.GetNodeType(node);
+        overloader = targetType.GetMembers("op_Implicit")
+          .OfType<IMethodSymbol>()
+          .SingleOrDefault(candidate => candidate.Parameters.Length == 1 &&
+            sourceType.IsCompatibleTo(candidate.Parameters[0].Type));
+      }
+      if (overloader?.MethodKind == MethodKind.Conversion) {
         ExpandFront(new InvocationBlock(node.GetLocation(), overloader, false));
       }
       ExpandFront(new CastBlock(node.GetLocation(), targetType));

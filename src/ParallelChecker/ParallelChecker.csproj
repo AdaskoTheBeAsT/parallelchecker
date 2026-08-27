@@ -25,7 +25,7 @@
     <Description>Parallel Checker for C#</Description>
     <Copyright>Copyright © 2017-2022 Prof. Dr. Luc Bläser, OST - Ostschweizer Fachhochschule, Switzerland</Copyright>
     <PackageProjectUrl>https://github.com/blaeser/parallelchecker</PackageProjectUrl>
-    <Version>2.7.0.200</Version>
+    <Version>2.7.0.250</Version>
     <Title>Parallel Checker for C#</Title>
     <Company>OST - Ostschweizer Fachhochschule, Switzerland"</Company>
     <Product>Parallel Checker</Product>

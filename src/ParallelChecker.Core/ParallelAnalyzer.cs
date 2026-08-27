@@ -1,10 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using ParallelChecker.Core.General;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
@@ -48,76 +46,31 @@ namespace ParallelChecker.Core {
     public override void Initialize(AnalysisContext context) {
       context.EnableConcurrentExecution();
       context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze);
-      context.RegisterSemanticModelAction(SemanticModelAction);
+      context.RegisterCompilationAction(CompilationAction);
     }
 
-    private class CacheEntry {
-      public HashSet<string> Files { get; } = new();
-      public Collection<Issue> Issues { get; } = new();
-    }
-
-    private static readonly Dictionary<string, CacheEntry> _cache = new();
-
-    private void SemanticModelAction(SemanticModelAnalysisContext context) {
-      var assembly = context.SemanticModel.Compilation.Assembly.Name;
-      var file = context.SemanticModel.SyntaxTree.FilePath;
-      var reset = false;
-      lock (_cache) {
-        if (!_cache.ContainsKey(assembly)) {
-          _cache[assembly] = new();
-          reset = true;
-        }
-        var set = _cache[assembly].Files;
-        if (set.Contains(file)) {
-          set.Clear();
-          reset = true;
-        }
-        set.Add(file);
-      }
-      var tree = context.SemanticModel.SyntaxTree;
-      var location = tree.GetRoot().GetLocation();
+    private void CompilationAction(CompilationAnalysisContext context) {
+      var location = context.Compilation.SyntaxTrees.FirstOrDefault()?.GetRoot().GetLocation() ?? Location.None;
       var watch = Stopwatch.StartNew();
-      if (reset) {
-        try {
-          var semanticModel = context.SemanticModel;
-          var result = ParallelAnalysis.FindIssues(semanticModel.Compilation, context.CancellationToken, _options, out bool faulted);
-          lock (_cache) {
-            _cache[assembly].Issues.Clear();
-            _cache[assembly].Issues.AddAll(result);
-          }
-          ReportIssues(context.ReportDiagnostic, tree, result);
-          var issueCount = result.Count();
+      try {
+        var result = ParallelAnalysis.FindIssues(context.Compilation, context.CancellationToken, _options, out bool faulted);
+        ReportIssues(context.ReportDiagnostic, result);
+        var issueCount = result.Count();
 #if DEBUG
-          // Guard: only report info when there are issues or a fault occurred
-          if (issueCount > 0 || faulted) {
-            ReportInfo(context.ReportDiagnostic, location, watch, issueCount.ToString(), faulted ? _FaultSign : string.Empty);
-          }
+        if (issueCount > 0 || faulted) {
+          ReportInfo(context.ReportDiagnostic, location, watch, issueCount.ToString(), faulted ? _FaultSign : string.Empty);
+        }
 #else
-          if (faulted) {
-            ReportInfo(context.ReportDiagnostic, location, watch, issueCount.ToString(), faulted ? _FaultSign : string.Empty);
-          }
-#endif
-        } catch (OperationCanceledException) {
-          lock (_cache) {
-            _cache.Remove(assembly);
-          }
-#if DEBUG
-          ReportInfo(context.ReportDiagnostic, location, watch, _NoneSign, $"Cancelled");
-#endif
-        } catch (Exception exception) {
-          ReportInfo(context.ReportDiagnostic, location, watch, _NoneSign, exception.Message);
-        }
-      } else {
-#if DEBUG
-        lock (_cache) {
-          // Guard: only report info for cached result when there are issues
-          var cachedCount = _cache[assembly].Issues.Count;
-          if (cachedCount > 0) {
-            ReportInfo(context.ReportDiagnostic, location, watch, cachedCount.ToString(), "Cached");
-          }
+        if (faulted) {
+          ReportInfo(context.ReportDiagnostic, location, watch, issueCount.ToString(), _FaultSign);
         }
 #endif
-        ReportIssues(context.ReportDiagnostic, tree, _cache[assembly].Issues);
+      } catch (OperationCanceledException) {
+#if DEBUG
+        ReportInfo(context.ReportDiagnostic, location, watch, _NoneSign, "Cancelled");
+#endif
+      } catch (Exception exception) {
+        ReportInfo(context.ReportDiagnostic, location, watch, _NoneSign, exception.Message);
       }
     }
     
@@ -126,22 +79,21 @@ namespace ParallelChecker.Core {
       report(diagnostic);
     }
 
-    private void ReportIssues(Action<Diagnostic> report, SyntaxTree tree, IEnumerable<Issue> issueList) {
+    private void ReportIssues(Action<Diagnostic> report, IEnumerable<Issue> issueList) {
       int number = 0;
       foreach (var issue in issueList) {
-        ReportIssue(report, tree, number, issue);
+        ReportIssue(report, number, issue);
         number++;
       }
     }
 
-    private static void ReportIssue(Action<Diagnostic> report, SyntaxTree tree, int number, Issue issue) {
+    private static void ReportIssue(Action<Diagnostic> report, int number, Issue issue) {
       foreach (var cause in new HashSet<Cause>(issue.Causes)) {
-        if (tree != null && tree.FilePath == cause.Location.SourceTree?.FilePath) {
-          var location = Location.Create(tree, cause.Location.SourceSpan);
+        if (cause.Location.SourceTree != null) {
           var title = string.Format(_WarningFormat, number, issue.Message);
           var helpLink = _GeneralHelpLink;
           _helpLinks.TryGetValue(issue.Category, out helpLink);
-          var diagnostic = Diagnostic.Create(_diagnosticWarning.Id, _diagnosticWarning.Category, title, _diagnosticWarning.DefaultSeverity, _diagnosticWarning.DefaultSeverity, _diagnosticWarning.IsEnabledByDefault, 3, title, issue.Description, helpLink, location, null, null, null);
+          var diagnostic = Diagnostic.Create(_diagnosticWarning.Id, _diagnosticWarning.Category, title, _diagnosticWarning.DefaultSeverity, _diagnosticWarning.DefaultSeverity, _diagnosticWarning.IsEnabledByDefault, 3, title, issue.Description, helpLink, cause.Location, null, null, null);
           report(diagnostic);
         }
       }
